@@ -79,7 +79,7 @@ public static class PolymorphicComponentTool
                 // Generate the polymorphic component
                 writer.WriteLine(GetIndent(indentLevel) + "[Serializable]");
                 writer.WriteLine(GetIndent(indentLevel) + "[StructLayout(LayoutKind.Explicit, Size = " + (largestStructSize + 4).ToString() + ")]");
-                writer.WriteLine(GetIndent(indentLevel) + "public struct " + compDefinitionAttribute.ComponentName + " : IComponentData");
+                writer.WriteLine(GetIndent(indentLevel) + "public struct " + compDefinitionAttribute.ComponentName + (compDefinitionAttribute.IsBufferElement ? " : IBufferElementData" : " : IComponentData"));
                 writer.WriteLine(GetIndent(indentLevel) + "{");
                 indentLevel++;
                 {
