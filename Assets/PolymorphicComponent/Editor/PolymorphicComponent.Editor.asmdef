@@ -2,7 +2,9 @@
     "name": "PolymorphicComponent.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:61b21eab1ee867d4da23670943cb9fc2"
+        "GUID:61b21eab1ee867d4da23670943cb9fc2",
+        "GUID:734d92eba21c94caba915361bd5ac177",
+        "GUID:e0cd26848372d4e5c891c569017e11f1"
     ],
     "includePlatforms": [
         "Editor"

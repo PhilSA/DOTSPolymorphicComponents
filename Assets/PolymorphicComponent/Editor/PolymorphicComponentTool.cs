@@ -21,6 +21,23 @@ public static class PolymorphicComponentTool
         {
             List<Type> compImplementations = ScanStructTypesImplementingInterface(interfaceType);
 
+            // Validate
+            foreach (var s in compImplementations)
+            {
+                FieldInfo[] fields = s.GetFields();
+                foreach (var f in fields)
+                {
+                    if (f.FieldType == typeof(Unity.Entities.Entity))
+                    {
+                        UnityEngine.Debug.LogError("Entity field found in " + s + ". Polymorphic components do not support Entity fields");
+                    }
+                    if (f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Unity.Entities.BlobAssetReference<>))
+                    {
+                        UnityEngine.Debug.LogError("BlobAssetReference field found in " + s + ". Polymorphic components do not support BlobAssetReference fields");
+                    }
+                }
+            }
+
             PolymorphicComponentDefinition compDefinitionAttribute = (PolymorphicComponentDefinition)Attribute.GetCustomAttribute(interfaceType, typeof(PolymorphicComponentDefinition));
 
             string folderPath = Application.dataPath + "/" + compDefinitionAttribute.FilePathRelativeToAssets;

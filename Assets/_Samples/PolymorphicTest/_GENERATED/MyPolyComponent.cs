@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Unity.Transforms;
 
 [Serializable]
-[StructLayout(LayoutKind.Explicit, Size = 20)]
+[StructLayout(LayoutKind.Explicit, Size = 56)]
 public struct MyPolyComponent : IComponentData
 {
 	public enum ComponentType
@@ -20,7 +20,7 @@ public struct MyPolyComponent : IComponentData
 	[FieldOffset(0)]
 	public CompB CompB;
 
-	[FieldOffset(16)]
+	[FieldOffset(52)]
 	public ComponentType TypeId;
 
 	public void Update(Single deltaTime, ref Translation translation, ref Rotation rotation)
