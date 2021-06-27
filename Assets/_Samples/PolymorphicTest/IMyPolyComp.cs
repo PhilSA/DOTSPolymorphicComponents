@@ -9,14 +9,23 @@ using System;
 using Unity.Transforms;
 using UnityEngine;
 
+[Serializable]
+public struct MyPolyCompSharedData
+{
+    public Entity Target;
+    public bool TestBool;
+}
+
 
 [PolymorphicComponentDefinition(
     "MyPolyComponent", // name
     "_Samples/PolymorphicTest/_GENERATED", // path
     new string[] { "Unity.Transforms" }, // AdditionalUsings
     false, // IsBufferElement
-    true)] // IsUnionStruct
+    true, // IsUnionStruct
+    typeof(MyPolyCompSharedData) // SharedDataType
+    )] 
 public interface IMyPolyComp
 {
-    void Update(float deltaTime, ref Translation translation, ref Rotation rotation);
+    void Update(float deltaTime, ref MyPolyCompSharedData sharedData, ref Translation translation, ref Rotation rotation);
 }

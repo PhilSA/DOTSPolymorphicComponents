@@ -14,7 +14,7 @@ public class TestSystem : SystemBase
 
         Entities.ForEach((Entity entity, ref MyPolyComponent polyComp, ref Translation translation, ref Rotation rotation) =>
         {
-            polyComp.Update(deltaTime, ref translation, ref rotation);
+            polyComp.Update(deltaTime, ref polyComp.MyPolyCompSharedData, ref translation, ref rotation);
         }).Schedule();
     }
 }

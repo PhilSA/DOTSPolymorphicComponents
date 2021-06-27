@@ -37,11 +37,11 @@ public static class PolymorphicComponentTool
                     {
                         if (f == typeof(Unity.Entities.Entity))
                         {
-                            UnityEngine.Debug.LogError("Entity field found in " + s + ". Polymorphic components do not support Entity fields when in Uniton Struct mode");
+                            UnityEngine.Debug.LogError("Entity field found in " + s + ". Polymorphic components do not support Entity fields outside of their sharedData struct when in Uniton Struct mode");
                         }
                         if (f.IsGenericType && f.GetGenericTypeDefinition() == typeof(Unity.Entities.BlobAssetReference<>))
                         {
-                            UnityEngine.Debug.LogError("BlobAssetReference field found in " + s + ". Polymorphic components do not support BlobAssetReference fields when in Uniton Struct mode");
+                            UnityEngine.Debug.LogError("BlobAssetReference field found in " + s + ". Polymorphic components do not support BlobAssetReference fields outside of their sharedData struct when in Uniton Struct mode");
                         }
                     }
                 }
@@ -108,12 +108,27 @@ public static class PolymorphicComponentTool
 
                     writer.WriteLine("");
 
+                    // shared data field
+                    int sharedDataSize = 0;
+                    if(compDefinitionAttribute.SharedDataType != null)
+                    {
+                        sharedDataSize = Marshal.SizeOf(compDefinitionAttribute.SharedDataType);
+
+                        if (compDefinitionAttribute.IsUnionStruct)
+                        {
+                            writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(0)]");
+                        }
+                        writer.WriteLine(GetIndent(indentLevel) + "public " + compDefinitionAttribute.SharedDataType.Name + " " + compDefinitionAttribute.SharedDataType.Name + ";");
+
+                        writer.WriteLine("");
+                    }
+
                     // Generate the struct fields
                     foreach (Type compType in compImplementations)
                     {
                         if (compDefinitionAttribute.IsUnionStruct)
                         {
-                            writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(0)]");
+                            writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + sharedDataSize + ")]");
                         }
                         writer.WriteLine(GetIndent(indentLevel) + "public " + compType.Name + " " + compType.Name + ";");
                     }
@@ -123,7 +138,7 @@ public static class PolymorphicComponentTool
                     // Component type field
                     if (compDefinitionAttribute.IsUnionStruct)
                     {
-                        writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + largestStructSize + ")]");
+                        writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + (sharedDataSize + largestStructSize) + ")]");
                         writer.WriteLine(GetIndent(indentLevel) + "public readonly " + typeEnumName + " " + typeEnumVarName + ";");
                     }
                     else
@@ -136,7 +151,13 @@ public static class PolymorphicComponentTool
                     // Generate the constructors
                     foreach (Type compType in compImplementations)
                     {
-                        writer.WriteLine(GetIndent(indentLevel) + "public " + compDefinitionAttribute.ComponentName + "(in " + compType.Name + " c)");
+                        string sharedDataConstructorParameter = "";
+                        if (compDefinitionAttribute.SharedDataType != null)
+                        {
+                            sharedDataConstructorParameter = ", " + compDefinitionAttribute.SharedDataType.Name + " d";
+                        }
+
+                        writer.WriteLine(GetIndent(indentLevel) + "public " + compDefinitionAttribute.ComponentName + "(in " + compType.Name + " c" + sharedDataConstructorParameter + ")");
                         writer.WriteLine(GetIndent(indentLevel) + "{");
                         indentLevel++;
                         {
@@ -149,6 +170,11 @@ public static class PolymorphicComponentTool
                             }
                             writer.WriteLine(GetIndent(indentLevel) + compType.Name + " = c;");
                             writer.WriteLine(GetIndent(indentLevel) + typeEnumVarName + " = " + typeEnumName + "." + compType.Name + ";");
+
+                            if (compDefinitionAttribute.SharedDataType != null)
+                            {
+                                writer.WriteLine(GetIndent(indentLevel) + compDefinitionAttribute.SharedDataType.Name + " = d;");
+                            }
                         }
                         indentLevel--;
                         writer.WriteLine(GetIndent(indentLevel) + "}");

@@ -14,7 +14,7 @@ public struct CompA : IMyPolyComp
     [HideInInspector]
     public float TimeCounter;
 
-    public void Update(float deltaTime, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyPolyCompSharedData sharedData, ref Translation translation, ref Rotation rotation)
     {
         TimeCounter += deltaTime;
 

@@ -15,37 +15,42 @@ public struct MyPolyComponent : IComponentData
 	}
 
 	[FieldOffset(0)]
+	public MyPolyCompSharedData MyPolyCompSharedData;
+
+	[FieldOffset(12)]
 	public CompA CompA;
-	[FieldOffset(0)]
+	[FieldOffset(12)]
 	public CompB CompB;
 
-	[FieldOffset(16)]
+	[FieldOffset(28)]
 	public readonly TypeId CurrentTypeId;
 
-	public MyPolyComponent(in CompA c)
+	public MyPolyComponent(in CompA c, MyPolyCompSharedData d)
 	{
 		CompB = default;
 		CompA = c;
 		CurrentTypeId = TypeId.CompA;
+		MyPolyCompSharedData = d;
 	}
 
-	public MyPolyComponent(in CompB c)
+	public MyPolyComponent(in CompB c, MyPolyCompSharedData d)
 	{
 		CompA = default;
 		CompB = c;
 		CurrentTypeId = TypeId.CompB;
+		MyPolyCompSharedData = d;
 	}
 
 
-	public void Update(Single deltaTime, ref Translation translation, ref Rotation rotation)
+	public void Update(Single deltaTime, ref MyPolyCompSharedData sharedData, ref Translation translation, ref Rotation rotation)
 	{
 		switch (CurrentTypeId)
 		{
 			case TypeId.CompA:
-				CompA.Update(deltaTime, ref translation, ref rotation);
+				CompA.Update(deltaTime, ref sharedData, ref translation, ref rotation);
 				break;
 			case TypeId.CompB:
-				CompB.Update(deltaTime, ref translation, ref rotation);
+				CompB.Update(deltaTime, ref sharedData, ref translation, ref rotation);
 				break;
 		}
 	}
