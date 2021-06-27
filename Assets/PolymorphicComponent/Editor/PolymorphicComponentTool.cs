@@ -39,10 +39,12 @@ public static class PolymorphicComponentTool
                         if (f == typeof(Unity.Entities.Entity))
                         {
                             UnityEngine.Debug.LogError("Entity field found in " + s + ". Polymorphic components do not support Entity fields outside of their sharedData struct when in Uniton Struct mode");
+                            return;
                         }
                         if (f.IsGenericType && f.GetGenericTypeDefinition() == typeof(Unity.Entities.BlobAssetReference<>))
                         {
                             UnityEngine.Debug.LogError("BlobAssetReference field found in " + s + ". Polymorphic components do not support BlobAssetReference fields outside of their sharedData struct when in Uniton Struct mode");
+                            return;
                         }
                     }
                 }

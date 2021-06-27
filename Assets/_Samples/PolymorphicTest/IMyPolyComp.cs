@@ -18,11 +18,11 @@ public struct MyPolyCompSharedData
 
 
 [PolymorphicComponentDefinition(
-    "MyPolyComponent", // name
-    "_Samples/PolymorphicTest/_GENERATED", // path
-    false, // IsBufferElement
-    true, // IsUnionStruct
-    typeof(MyPolyCompSharedData) // SharedDataType
+        "MyPolyComponent", // name
+        "_Samples/PolymorphicTest/_GENERATED", // path
+        false, // IsBufferElement
+        true, // IsUnionStruct
+        typeof(MyPolyCompSharedData) // SharedDataType
     )] 
 public interface IMyPolyComp
 {
