@@ -11,11 +11,11 @@ using UnityEngine;
 
 
 [PolymorphicComponentDefinition(
-    "MyPolyComponent", 
-    "_Samples/PolymorphicTest/_GENERATED", 
-    new string[] { "Unity.Transforms" }, 
-    false,
-    false)]
+    "MyPolyComponent", // name
+    "_Samples/PolymorphicTest/_GENERATED", // path
+    new string[] { "Unity.Transforms" }, // AdditionalUsings
+    false, // IsBufferElement
+    true)] // IsUnionStruct
 public interface IMyPolyComp
 {
     void Update(float deltaTime, ref Translation translation, ref Rotation rotation);
