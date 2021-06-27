@@ -20,7 +20,6 @@ public struct MyPolyCompSharedData
 [PolymorphicComponentDefinition(
     "MyPolyComponent", // name
     "_Samples/PolymorphicTest/_GENERATED", // path
-    new string[] { "Unity.Transforms" }, // AdditionalUsings
     false, // IsBufferElement
     true, // IsUnionStruct
     typeof(MyPolyCompSharedData) // SharedDataType

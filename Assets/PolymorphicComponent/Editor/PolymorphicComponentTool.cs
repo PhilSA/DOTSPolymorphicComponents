@@ -22,6 +22,7 @@ public static class PolymorphicComponentTool
         List<Type> compDefinitionInterfaces = ScanInterfaceTypesWithAttributes(typeof(PolymorphicComponentDefinition));
         foreach (Type interfaceType in compDefinitionInterfaces)
         {
+            MethodInfo[] polymorphicMethods = interfaceType.GetMethods();
             List<Type> compImplementations = ScanStructTypesImplementingInterface(interfaceType);
             PolymorphicComponentDefinition compDefinitionAttribute = (PolymorphicComponentDefinition)Attribute.GetCustomAttribute(interfaceType, typeof(PolymorphicComponentDefinition));
 
@@ -53,13 +54,36 @@ public static class PolymorphicComponentTool
             int indentLevel = 0;
             StreamWriter writer = File.CreateText(folderPath + "/" + compDefinitionAttribute.ComponentName + ".cs");
 
-            writer.WriteLine(GetIndent(indentLevel) + "using System;");
-            writer.WriteLine(GetIndent(indentLevel) + "using Unity.Entities;");
-            writer.WriteLine(GetIndent(indentLevel) + "using Unity.Mathematics;");
-            writer.WriteLine(GetIndent(indentLevel) + "using System.Runtime.InteropServices;");
-            if (compDefinitionAttribute.AdditionalUsings != null)
+            // Generate usings
+            List<string> usingNamespaces = new List<string> { "System", "System.Runtime.InteropServices", "Unity.Entities", "Unity.Mathematics" };
+            foreach (var m in polymorphicMethods)
             {
-                foreach (string addUsing in compDefinitionAttribute.AdditionalUsings)
+                var parameters = m.GetParameters();
+                foreach (var p in parameters)
+                {
+                    if (!usingNamespaces.Contains(p.ParameterType.Namespace))
+                    {
+                        usingNamespaces.Add(p.ParameterType.Namespace);
+                    }
+                }
+            }
+            foreach (var c in compImplementations)
+            {
+                if (!usingNamespaces.Contains(c.Namespace))
+                {
+                    usingNamespaces.Add(c.Namespace);
+                }
+            }
+            if (compDefinitionAttribute.SharedDataType != null)
+            {
+                if (!usingNamespaces.Contains(compDefinitionAttribute.SharedDataType.Namespace))
+                {
+                    usingNamespaces.Add(compDefinitionAttribute.SharedDataType.Namespace);
+                }
+            }
+            foreach (string addUsing in usingNamespaces)
+            {
+                if (!string.IsNullOrEmpty(addUsing))
                 {
                     writer.WriteLine(GetIndent(indentLevel) + "using " + addUsing + ";");
                 }
@@ -67,6 +91,7 @@ public static class PolymorphicComponentTool
 
             writer.WriteLine("");
 
+            // Namespace
             if (!string.IsNullOrEmpty(interfaceType.Namespace))
             {
                 writer.WriteLine(GetIndent(indentLevel) + "namespace " + interfaceType.Namespace);
@@ -74,8 +99,6 @@ public static class PolymorphicComponentTool
                 indentLevel++;
             }
             {
-                MethodInfo[] polymorphicMethods = interfaceType.GetMethods();
-
                 // Get the largest struct size of all structs that implement the interface
                 int largestStructSize = 0;
                 foreach (Type s in compImplementations)

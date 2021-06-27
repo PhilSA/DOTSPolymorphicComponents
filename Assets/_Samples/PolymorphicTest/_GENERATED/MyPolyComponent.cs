@@ -1,7 +1,7 @@
 using System;
+using System.Runtime.InteropServices;
 using Unity.Entities;
 using Unity.Mathematics;
-using System.Runtime.InteropServices;
 using Unity.Transforms;
 
 [Serializable]
