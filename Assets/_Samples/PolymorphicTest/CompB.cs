@@ -11,6 +11,7 @@ public struct CompB : IMyPolyComp
 {
     public float RotationSpeed;
     public float3 RotationAxis;
+    public Entity entityA;
 
     public void Update(float deltaTime, ref Translation translation, ref Rotation rotation)
     {

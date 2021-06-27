@@ -9,6 +9,6 @@ public class CompAAuthoring : MonoBehaviour, IConvertGameObjectToEntity
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        dstManager.AddComponentData(entity, new MyPolyComponent { CompA = CompA, TypeId = MyPolyComponent.ComponentType.CompA });
+        dstManager.AddComponentData(entity, new MyPolyComponent { CompA = CompA, CurrentTypeId = MyPolyComponent.TypeId.CompA });
     }
 }

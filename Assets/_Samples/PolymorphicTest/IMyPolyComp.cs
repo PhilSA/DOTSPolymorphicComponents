@@ -10,7 +10,12 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-[PolymorphicComponentDefinition("MyPolyComponent", "_Samples/PolymorphicTest/_GENERATED", new string[] { "Unity.Transforms" }, false)]
+[PolymorphicComponentDefinition(
+    "MyPolyComponent", 
+    "_Samples/PolymorphicTest/_GENERATED", 
+    new string[] { "Unity.Transforms" }, 
+    false,
+    false)]
 public interface IMyPolyComp
 {
     void Update(float deltaTime, ref Translation translation, ref Rotation rotation);

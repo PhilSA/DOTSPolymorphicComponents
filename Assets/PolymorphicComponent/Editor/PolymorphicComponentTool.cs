@@ -12,6 +12,9 @@ using System.Runtime.InteropServices;
 
 public static class PolymorphicComponentTool
 {
+    private const string typeEnumName = "TypeId";
+    private const string typeEnumVarName = "CurrentTypeId";
+
     [MenuItem("Tools/Generate PolymorphicComponents")]
     public static void Generate()
     {
@@ -20,25 +23,29 @@ public static class PolymorphicComponentTool
         foreach (Type interfaceType in compDefinitionInterfaces)
         {
             List<Type> compImplementations = ScanStructTypesImplementingInterface(interfaceType);
+            PolymorphicComponentDefinition compDefinitionAttribute = (PolymorphicComponentDefinition)Attribute.GetCustomAttribute(interfaceType, typeof(PolymorphicComponentDefinition));
 
             // Validate
-            foreach (var s in compImplementations)
+            foreach (Type s in compImplementations)
             {
-                FieldInfo[] fields = s.GetFields();
-                foreach (var f in fields)
+                List<Type> fieldTypes = new List<Type>();
+                GetUniqueFieldTypesRecursive(s, ref fieldTypes);
+
+                foreach (Type f in fieldTypes)
                 {
-                    if (f.FieldType == typeof(Unity.Entities.Entity))
+                    if (compDefinitionAttribute.IsUnionStruct)
                     {
-                        UnityEngine.Debug.LogError("Entity field found in " + s + ". Polymorphic components do not support Entity fields");
-                    }
-                    if (f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == typeof(Unity.Entities.BlobAssetReference<>))
-                    {
-                        UnityEngine.Debug.LogError("BlobAssetReference field found in " + s + ". Polymorphic components do not support BlobAssetReference fields");
+                        if (f == typeof(Unity.Entities.Entity))
+                        {
+                            UnityEngine.Debug.LogError("Entity field found in " + s + ". Polymorphic components do not support Entity fields when in Uniton Struct mode");
+                        }
+                        if (f.IsGenericType && f.GetGenericTypeDefinition() == typeof(Unity.Entities.BlobAssetReference<>))
+                        {
+                            UnityEngine.Debug.LogError("BlobAssetReference field found in " + s + ". Polymorphic components do not support BlobAssetReference fields when in Uniton Struct mode");
+                        }
                     }
                 }
             }
-
-            PolymorphicComponentDefinition compDefinitionAttribute = (PolymorphicComponentDefinition)Attribute.GetCustomAttribute(interfaceType, typeof(PolymorphicComponentDefinition));
 
             string folderPath = Application.dataPath + "/" + compDefinitionAttribute.FilePathRelativeToAssets;
             Directory.CreateDirectory(folderPath);
@@ -78,13 +85,16 @@ public static class PolymorphicComponentTool
 
                 // Generate the polymorphic component
                 writer.WriteLine(GetIndent(indentLevel) + "[Serializable]");
-                writer.WriteLine(GetIndent(indentLevel) + "[StructLayout(LayoutKind.Explicit, Size = " + (largestStructSize + 4).ToString() + ")]");
+                if (compDefinitionAttribute.IsUnionStruct)
+                {
+                    writer.WriteLine(GetIndent(indentLevel) + "[StructLayout(LayoutKind.Explicit, Size = " + (largestStructSize + 4).ToString() + ")]");
+                }
                 writer.WriteLine(GetIndent(indentLevel) + "public struct " + compDefinitionAttribute.ComponentName + (compDefinitionAttribute.IsBufferElement ? " : IBufferElementData" : " : IComponentData"));
                 writer.WriteLine(GetIndent(indentLevel) + "{");
                 indentLevel++;
                 {
                     // Generate the enum of component types
-                    writer.WriteLine(GetIndent(indentLevel) + "public enum ComponentType");
+                    writer.WriteLine(GetIndent(indentLevel) + "public enum " + typeEnumName);
                     writer.WriteLine(GetIndent(indentLevel) + "{");
                     indentLevel++;
                     {
@@ -101,15 +111,21 @@ public static class PolymorphicComponentTool
                     // Generate the struct fields
                     foreach (Type compType in compImplementations)
                     {
-                        writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(0)]");
+                        if (compDefinitionAttribute.IsUnionStruct)
+                        {
+                            writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(0)]");
+                        }
                         writer.WriteLine(GetIndent(indentLevel) + "public " + compType.Name + " " + compType.Name + ";");
 
                         writer.WriteLine("");
                     }
 
                     // Component type field
-                    writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + largestStructSize + ")]");
-                    writer.WriteLine(GetIndent(indentLevel) + "public ComponentType TypeId;");
+                    if (compDefinitionAttribute.IsUnionStruct)
+                    {
+                        writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + largestStructSize + ")]");
+                    }
+                    writer.WriteLine(GetIndent(indentLevel) + "public " + typeEnumName + " " + typeEnumVarName + ";");
 
                     // Generate the polymorphic methods
                     foreach (MethodInfo method in polymorphicMethods)
@@ -143,13 +159,13 @@ public static class PolymorphicComponentTool
                             }
 
                             // Generate the switch case
-                            writer.WriteLine(GetIndent(indentLevel) + "switch (TypeId)");
+                            writer.WriteLine(GetIndent(indentLevel) + "switch (" + typeEnumVarName + ")");
                             writer.WriteLine(GetIndent(indentLevel) + "{");
                             indentLevel++;
                             {
                                 foreach (Type compType in compImplementations)
                                 {
-                                    writer.WriteLine(GetIndent(indentLevel) + "case ComponentType." + compType.Name + ":");
+                                    writer.WriteLine(GetIndent(indentLevel) + "case " + typeEnumName + "." + compType.Name + ":");
 
                                     indentLevel++;
 
@@ -192,6 +208,19 @@ public static class PolymorphicComponentTool
         }
 
         AssetDatabase.Refresh();
+    }
+
+    public static void GetUniqueFieldTypesRecursive(Type t, ref List<Type> fieldTypes)
+    {
+        var fields = t.GetFields();
+        foreach (FieldInfo f in fields)
+        {
+            if (!fieldTypes.Contains(f.FieldType))
+            {
+                fieldTypes.Add(f.FieldType);
+                GetUniqueFieldTypesRecursive(f.FieldType, ref fieldTypes);
+            }
+        }
     }
 
     public static bool IsByRef(ParameterInfo parameterInfo)
