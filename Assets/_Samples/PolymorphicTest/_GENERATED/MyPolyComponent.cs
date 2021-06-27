@@ -20,12 +20,7 @@ public struct MyPolyComponent : IComponentData
 	public CompB CompB;
 
 	[FieldOffset(16)]
-	private TypeId CurrentTypeId;
-
-	public TypeId GetTypeId()
-	{
-		return CurrentTypeId;
-	}
+	public readonly TypeId CurrentTypeId;
 
 	public MyPolyComponent(in CompA c)
 	{

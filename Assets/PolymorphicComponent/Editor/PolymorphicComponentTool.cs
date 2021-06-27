@@ -124,7 +124,7 @@ public static class PolymorphicComponentTool
                     if (compDefinitionAttribute.IsUnionStruct)
                     {
                         writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + largestStructSize + ")]");
-                        writer.WriteLine(GetIndent(indentLevel) + "private " + typeEnumName + " " + typeEnumVarName + ";");
+                        writer.WriteLine(GetIndent(indentLevel) + "public readonly " + typeEnumName + " " + typeEnumVarName + ";");
                     }
                     else
                     {
@@ -132,21 +132,6 @@ public static class PolymorphicComponentTool
                     }
 
                     writer.WriteLine("");
-
-                    if (compDefinitionAttribute.IsUnionStruct)
-                    {
-                        // Get type id
-                        writer.WriteLine(GetIndent(indentLevel) + "public " + typeEnumName + " Get" + typeEnumName + "()");
-                        writer.WriteLine(GetIndent(indentLevel) + "{");
-                        indentLevel++;
-                        {
-                            writer.WriteLine(GetIndent(indentLevel) + "return " + typeEnumVarName + ";");
-                        }
-                        indentLevel--;
-                        writer.WriteLine(GetIndent(indentLevel) + "}");
-
-                        writer.WriteLine("");
-                    }
 
                     // Generate the constructors
                     foreach (Type compType in compImplementations)
