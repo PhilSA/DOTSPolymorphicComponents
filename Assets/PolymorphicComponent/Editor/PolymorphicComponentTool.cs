@@ -116,16 +116,60 @@ public static class PolymorphicComponentTool
                             writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(0)]");
                         }
                         writer.WriteLine(GetIndent(indentLevel) + "public " + compType.Name + " " + compType.Name + ";");
-
-                        writer.WriteLine("");
                     }
+
+                    writer.WriteLine("");
 
                     // Component type field
                     if (compDefinitionAttribute.IsUnionStruct)
                     {
                         writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(" + largestStructSize + ")]");
+                        writer.WriteLine(GetIndent(indentLevel) + "private " + typeEnumName + " " + typeEnumVarName + ";");
                     }
-                    writer.WriteLine(GetIndent(indentLevel) + "public " + typeEnumName + " " + typeEnumVarName + ";");
+                    else
+                    {
+                        writer.WriteLine(GetIndent(indentLevel) + "public " + typeEnumName + " " + typeEnumVarName + ";");
+                    }
+
+                    writer.WriteLine("");
+
+                    if (compDefinitionAttribute.IsUnionStruct)
+                    {
+                        // Get type id
+                        writer.WriteLine(GetIndent(indentLevel) + "public " + typeEnumName + " Get" + typeEnumName + "()");
+                        writer.WriteLine(GetIndent(indentLevel) + "{");
+                        indentLevel++;
+                        {
+                            writer.WriteLine(GetIndent(indentLevel) + "return " + typeEnumVarName + ";");
+                        }
+                        indentLevel--;
+                        writer.WriteLine(GetIndent(indentLevel) + "}");
+
+                        writer.WriteLine("");
+                    }
+
+                    // Generate the constructors
+                    foreach (Type compType in compImplementations)
+                    {
+                        writer.WriteLine(GetIndent(indentLevel) + "public " + compDefinitionAttribute.ComponentName + "(in " + compType.Name + " c)");
+                        writer.WriteLine(GetIndent(indentLevel) + "{");
+                        indentLevel++;
+                        {
+                            foreach (Type compTypeInner in compImplementations)
+                            {
+                                if (compTypeInner != compType)
+                                {
+                                    writer.WriteLine(GetIndent(indentLevel) + compTypeInner.Name + " = default;");
+                                }
+                            }
+                            writer.WriteLine(GetIndent(indentLevel) + compType.Name + " = c;");
+                            writer.WriteLine(GetIndent(indentLevel) + typeEnumVarName + " = " + typeEnumName + "." + compType.Name + ";");
+                        }
+                        indentLevel--;
+                        writer.WriteLine(GetIndent(indentLevel) + "}");
+
+                        writer.WriteLine("");
+                    }
 
                     // Generate the polymorphic methods
                     foreach (MethodInfo method in polymorphicMethods)

@@ -16,12 +16,31 @@ public struct MyPolyComponent : IComponentData
 
 	[FieldOffset(0)]
 	public CompA CompA;
-
 	[FieldOffset(0)]
 	public CompB CompB;
 
 	[FieldOffset(16)]
-	public TypeId CurrentTypeId;
+	private TypeId CurrentTypeId;
+
+	public TypeId GetTypeId()
+	{
+		return CurrentTypeId;
+	}
+
+	public MyPolyComponent(in CompA c)
+	{
+		CompB = default;
+		CompA = c;
+		CurrentTypeId = TypeId.CompA;
+	}
+
+	public MyPolyComponent(in CompB c)
+	{
+		CompA = default;
+		CompB = c;
+		CurrentTypeId = TypeId.CompB;
+	}
+
 
 	public void Update(Single deltaTime, ref Translation translation, ref Rotation rotation)
 	{
