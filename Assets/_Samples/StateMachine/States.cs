@@ -5,6 +5,23 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 [Serializable]
+public struct StateInit : IMyState
+{
+    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation)
+    {
+    }
+
+    public void OnStateExit(MyStateMachine.TypeId nextState)
+    {
+    }
+
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    {
+        MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateC, ref stateMachine, ref translation);
+    }
+}
+
+[Serializable]
 public struct StateA : IMyState
 {
     public float Duration;
