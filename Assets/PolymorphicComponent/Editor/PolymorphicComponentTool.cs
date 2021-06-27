@@ -221,7 +221,7 @@ public static class PolymorphicComponentTool
                             {
                                 methodDeclaration += ", ";
                             }
-                            methodDeclaration += GetParameterDecorator(paramInfo) + paramInfo.ParameterType.Name.Replace("&", "") + " " + paramInfo.Name;
+                            methodDeclaration += GetParameterRefKeyword(paramInfo) + paramInfo.ParameterType.Name.Replace("&", "") + " " + paramInfo.Name;
                         }
                         methodDeclaration += ")";
 
@@ -257,7 +257,7 @@ public static class PolymorphicComponentTool
                                         {
                                             methodCallDeclaration += ", ";
                                         }
-                                        methodCallDeclaration += GetParameterDecorator(paramInfo) + paramInfo.Name;
+                                        methodCallDeclaration += GetParameterRefKeyword(paramInfo) + paramInfo.Name;
                                     }
                                     methodCallDeclaration += ");";
 
@@ -308,7 +308,7 @@ public static class PolymorphicComponentTool
         return parameterInfo.ParameterType.IsByRef && !parameterInfo.IsOut && !parameterInfo.IsIn;
     }
 
-    private static string GetParameterDecorator(ParameterInfo parameterInfo)
+    private static string GetParameterRefKeyword(ParameterInfo parameterInfo)
     {
         string s = "";
         if(parameterInfo.ParameterType.IsByRef)
