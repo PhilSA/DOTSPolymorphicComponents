@@ -108,11 +108,18 @@ public static class PolymorphicComponentTool
                     largestStructSize = Math.Max(largestStructSize, Marshal.SizeOf(s));
                 }
 
+                // Get the sharedData size
+                int sharedDataSize = 0;
+                if (compDefinitionAttribute.SharedDataType != null)
+                {
+                    sharedDataSize = Marshal.SizeOf(compDefinitionAttribute.SharedDataType);
+                }
+
                 // Generate the polymorphic component
                 writer.WriteLine(GetIndent(indentLevel) + "[Serializable]");
                 if (compDefinitionAttribute.IsUnionStruct)
                 {
-                    writer.WriteLine(GetIndent(indentLevel) + "[StructLayout(LayoutKind.Explicit, Size = " + (largestStructSize + 4).ToString() + ")]");
+                    writer.WriteLine(GetIndent(indentLevel) + "[StructLayout(LayoutKind.Explicit, Size = " + (sharedDataSize + largestStructSize + 4).ToString() + ")]");
                 }
                 writer.WriteLine(GetIndent(indentLevel) + "public struct " + compDefinitionAttribute.ComponentName + (compDefinitionAttribute.IsBufferElement ? " : IBufferElementData" : " : IComponentData"));
                 writer.WriteLine(GetIndent(indentLevel) + "{");
@@ -134,11 +141,8 @@ public static class PolymorphicComponentTool
                     writer.WriteLine("");
 
                     // shared data field
-                    int sharedDataSize = 0;
                     if(compDefinitionAttribute.SharedDataType != null)
                     {
-                        sharedDataSize = Marshal.SizeOf(compDefinitionAttribute.SharedDataType);
-
                         if (compDefinitionAttribute.IsUnionStruct)
                         {
                             writer.WriteLine(GetIndent(indentLevel) + "[FieldOffset(0)]");

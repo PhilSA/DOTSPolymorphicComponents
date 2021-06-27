@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 [Serializable]
-[StructLayout(LayoutKind.Explicit, Size = 20)]
+[StructLayout(LayoutKind.Explicit, Size = 32)]
 public struct MyPolyComponent : IComponentData
 {
 	public enum TypeId
