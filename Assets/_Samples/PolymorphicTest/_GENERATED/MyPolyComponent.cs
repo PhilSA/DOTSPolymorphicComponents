@@ -25,7 +25,7 @@ public struct MyPolyComponent : IComponentData
 	[FieldOffset(28)]
 	public readonly TypeId CurrentTypeId;
 
-	public MyPolyComponent(in CompA c, MyPolyCompSharedData d)
+	public MyPolyComponent(in CompA c, in MyPolyCompSharedData d)
 	{
 		CompB = default;
 		CompA = c;
@@ -33,7 +33,7 @@ public struct MyPolyComponent : IComponentData
 		MyPolyCompSharedData = d;
 	}
 
-	public MyPolyComponent(in CompB c, MyPolyCompSharedData d)
+	public MyPolyComponent(in CompB c, in MyPolyCompSharedData d)
 	{
 		CompA = default;
 		CompB = c;

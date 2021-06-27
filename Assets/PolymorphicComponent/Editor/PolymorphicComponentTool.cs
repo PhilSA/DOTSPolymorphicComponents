@@ -154,7 +154,7 @@ public static class PolymorphicComponentTool
                         string sharedDataConstructorParameter = "";
                         if (compDefinitionAttribute.SharedDataType != null)
                         {
-                            sharedDataConstructorParameter = ", " + compDefinitionAttribute.SharedDataType.Name + " d";
+                            sharedDataConstructorParameter = ", in " + compDefinitionAttribute.SharedDataType.Name + " d";
                         }
 
                         writer.WriteLine(GetIndent(indentLevel) + "public " + compDefinitionAttribute.ComponentName + "(in " + compType.Name + " c" + sharedDataConstructorParameter + ")");
