@@ -7,17 +7,15 @@ using Unity.Transforms;
 [Serializable]
 public struct StateInit : IMyState
 {
-    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation)
-    {
-    }
+    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation, ref RandomComp random)
+    { }
 
     public void OnStateExit(MyStateMachine.TypeId nextState)
-    {
-    }
+    { }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random)
     {
-        MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateC, ref stateMachine, ref translation);
+        MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateC, ref stateMachine, ref translation, ref random);
     }
 }
 
@@ -31,25 +29,25 @@ public struct StateA : IMyState
     [NonSerialized]
     public float DurationCounter;
 
-    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation)
+    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation, ref RandomComp random)
     {
         // Flip direction
         MoveDirection = -MoveDirection;
 
-        DurationCounter = Duration;
+        DurationCounter = random.Random.NextFloat(Duration * 0.5f, Duration * 2f);
     }
 
     public void OnStateExit(MyStateMachine.TypeId nextState)
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random)
     {
         translation.Value += MoveDirection * MoveSpeed * deltaTime;
 
         if (DurationCounter <= 0f)
         {
-            MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateB, ref stateMachine, ref translation);
+            MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateB, ref stateMachine, ref translation, ref random);
         }
         DurationCounter -= deltaTime;
     }
@@ -65,22 +63,22 @@ public struct StateB : IMyState
     [NonSerialized]
     public float DurationCounter;
 
-    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation)
+    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation, ref RandomComp random)
     {
-        DurationCounter = Duration;
+        DurationCounter = random.Random.NextFloat(Duration * 0.5f, Duration * 2f);
     }
 
     public void OnStateExit(MyStateMachine.TypeId nextState)
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random)
     {
         rotation.Value = math.mul(rotation.Value, quaternion.Euler(math.normalizesafe(RotationAxis) * RotationSpeed * deltaTime));
 
         if (DurationCounter <= 0f)
         {
-            MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateC, ref stateMachine, ref translation);
+            MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateC, ref stateMachine, ref translation, ref random);
         }
         DurationCounter -= deltaTime;
     }
@@ -98,9 +96,9 @@ public struct StateC : IMyState
     [NonSerialized]
     public float3 StartPosition;
 
-    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation)
+    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation, ref RandomComp random)
     {
-        DurationCounter = Duration;
+        DurationCounter = random.Random.NextFloat(Duration * 0.5f, Duration * 2f);
         StartPosition = translation.Value;
     }
 
@@ -108,13 +106,13 @@ public struct StateC : IMyState
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random)
     {
         translation.Value = StartPosition + (MoveDirection * math.sin(((math.PI * 2f) / Duration) * math.clamp(DurationCounter, 0f, Duration)) * MoveAmplitude);
 
         if (DurationCounter <= 0f)
         {
-            MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateA, ref stateMachine, ref translation);
+            MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateA, ref stateMachine, ref translation, ref random);
         }
         DurationCounter -= deltaTime;
     }

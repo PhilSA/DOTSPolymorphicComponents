@@ -59,21 +59,21 @@ public struct MyStateMachine : IComponentData
 	}
 
 
-	public void OnStateEnter(TypeId previousState, ref Translation translation)
+	public void OnStateEnter(TypeId previousState, ref Translation translation, ref RandomComp random)
 	{
 		switch (CurrentTypeId)
 		{
 			case TypeId.StateInit:
-				StateInit.OnStateEnter(previousState, ref translation);
+				StateInit.OnStateEnter(previousState, ref translation, ref random);
 				break;
 			case TypeId.StateA:
-				StateA.OnStateEnter(previousState, ref translation);
+				StateA.OnStateEnter(previousState, ref translation, ref random);
 				break;
 			case TypeId.StateB:
-				StateB.OnStateEnter(previousState, ref translation);
+				StateB.OnStateEnter(previousState, ref translation, ref random);
 				break;
 			case TypeId.StateC:
-				StateC.OnStateEnter(previousState, ref translation);
+				StateC.OnStateEnter(previousState, ref translation, ref random);
 				break;
 		}
 	}
@@ -97,21 +97,21 @@ public struct MyStateMachine : IComponentData
 		}
 	}
 
-	public void Update(Single deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+	public void Update(Single deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random)
 	{
 		switch (CurrentTypeId)
 		{
 			case TypeId.StateInit:
-				StateInit.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateInit.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ref random);
 				break;
 			case TypeId.StateA:
-				StateA.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateA.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ref random);
 				break;
 			case TypeId.StateB:
-				StateB.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateB.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ref random);
 				break;
 			case TypeId.StateC:
-				StateC.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateC.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ref random);
 				break;
 		}
 	}

@@ -12,14 +12,14 @@ using Unity.Transforms;
     null)]
 public interface IMyState
 {
-    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation);
+    public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation, ref RandomComp random);
     public void OnStateExit(MyStateMachine.TypeId nextState);
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation);
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random);
 }
 
 public static class MyStateMachineUtils
 {
-    public static void TransitionTo(MyStateMachine.TypeId newState, ref MyStateMachine sm, ref Translation translation, bool force = false)
+    public static void TransitionTo(MyStateMachine.TypeId newState, ref MyStateMachine sm, ref Translation translation, ref RandomComp random, bool force = false)
     {
         if (force || sm.CurrentTypeId != newState)
         {
@@ -27,7 +27,7 @@ public static class MyStateMachineUtils
             sm.CurrentTypeId = newState;
 
             sm.OnStateExit(previousState);
-            sm.OnStateEnter(sm.CurrentTypeId, ref translation);
+            sm.OnStateEnter(sm.CurrentTypeId, ref translation, ref random);
         }
     }
 }

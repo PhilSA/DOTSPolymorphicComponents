@@ -11,9 +11,9 @@ public class MyStateMachineSystem : SystemBase
     {
         float dt = Time.DeltaTime;
 
-        Entities.ForEach((Entity entity, ref MyStateMachine myStateMachine, ref Translation translation, ref Rotation rotation) => 
+        Entities.ForEach((Entity entity, ref MyStateMachine myStateMachine, ref Translation translation, ref Rotation rotation, ref RandomComp random) => 
         {
-            myStateMachine.Update(dt, ref myStateMachine, ref translation, ref rotation);
-        }).Schedule();
+            myStateMachine.Update(dt, ref myStateMachine, ref translation, ref rotation, ref random);
+        }).ScheduleParallel();
     }
 }
