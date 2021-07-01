@@ -225,7 +225,7 @@ public static class PolymorphicComponentTool
                             {
                                 methodDeclaration += ", ";
                             }
-                            methodDeclaration += GetParameterRefKeyword(paramInfo) + paramInfo.ParameterType.Name.Replace("&", "") + " " + paramInfo.Name;
+                            methodDeclaration += GetParameterRefKeyword(paramInfo) + paramInfo.ParameterType.ToString().Replace("&", "").Replace("`1", "").Replace("[", "<").Replace("]", ">") + " " + paramInfo.Name;
                         }
                         methodDeclaration += ")";
 
