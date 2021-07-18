@@ -225,7 +225,7 @@ public static class PolymorphicComponentTool
                             {
                                 methodDeclaration += ", ";
                             }
-                            methodDeclaration += GetParameterRefKeyword(paramInfo) + paramInfo.ParameterType.ToString().Replace("&", "").Replace("`1", "").Replace("[", "<").Replace("]", ">") + " " + paramInfo.Name;
+                            methodDeclaration += GetParameterRefKeyword(paramInfo) + GetTypeName(paramInfo.ParameterType) + " " + paramInfo.Name;
                         }
                         methodDeclaration += ")";
 
@@ -292,6 +292,11 @@ public static class PolymorphicComponentTool
         }
 
         AssetDatabase.Refresh();
+    }
+
+    public static string GetTypeName(Type t)
+    {
+        return t.ToString().Replace("&", "").Replace("`1", "").Replace("[", "<").Replace("]", ">").Replace("+", ".");
     }
 
     public static void GetUniqueFieldTypesRecursive(Type t, ref List<Type> fieldTypes)

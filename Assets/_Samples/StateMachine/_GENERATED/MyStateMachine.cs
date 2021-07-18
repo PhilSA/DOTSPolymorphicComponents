@@ -59,7 +59,7 @@ public struct MyStateMachine : IComponentData
 	}
 
 
-	public void OnStateEnter(TypeId previousState, ref Translation translation)
+	public void OnStateEnter(MyStateMachine.TypeId previousState, ref Unity.Transforms.Translation translation)
 	{
 		switch (CurrentTypeId)
 		{
@@ -78,7 +78,7 @@ public struct MyStateMachine : IComponentData
 		}
 	}
 
-	public void OnStateExit(TypeId nextState)
+	public void OnStateExit(MyStateMachine.TypeId nextState)
 	{
 		switch (CurrentTypeId)
 		{
@@ -97,21 +97,21 @@ public struct MyStateMachine : IComponentData
 		}
 	}
 
-	public void Update(Single deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+	public void Update(System.Single deltaTime, ref MyStateMachine stateMachine, ref Unity.Transforms.Translation translation, ref Unity.Transforms.Rotation rotation, Unity.Entities.EntityCommandBuffer.ParallelWriter ecb)
 	{
 		switch (CurrentTypeId)
 		{
 			case TypeId.StateInit:
-				StateInit.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateInit.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ecb);
 				break;
 			case TypeId.StateA:
-				StateA.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateA.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ecb);
 				break;
 			case TypeId.StateB:
-				StateB.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateB.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ecb);
 				break;
 			case TypeId.StateC:
-				StateC.Update(deltaTime, ref stateMachine, ref translation, ref rotation);
+				StateC.Update(deltaTime, ref stateMachine, ref translation, ref rotation, ecb);
 				break;
 		}
 	}

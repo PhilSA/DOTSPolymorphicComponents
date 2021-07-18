@@ -14,7 +14,7 @@ public interface IMyState
 {
     public void OnStateEnter(MyStateMachine.TypeId previousState, ref Translation translation);
     public void OnStateExit(MyStateMachine.TypeId nextState);
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation);
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, EntityCommandBuffer.ParallelWriter ecb);
 }
 
 public static class MyStateMachineUtils

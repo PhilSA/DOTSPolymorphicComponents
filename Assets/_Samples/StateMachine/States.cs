@@ -15,7 +15,7 @@ public struct StateInit : IMyState
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, EntityCommandBuffer.ParallelWriter ecb)
     {
         MyStateMachineUtils.TransitionTo(MyStateMachine.TypeId.StateC, ref stateMachine, ref translation);
     }
@@ -43,7 +43,7 @@ public struct StateA : IMyState
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, EntityCommandBuffer.ParallelWriter ecb)
     {
         translation.Value += MoveDirection * MoveSpeed * deltaTime;
 
@@ -74,7 +74,7 @@ public struct StateB : IMyState
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, EntityCommandBuffer.ParallelWriter ecb)
     {
         rotation.Value = math.mul(rotation.Value, quaternion.Euler(math.normalizesafe(RotationAxis) * RotationSpeed * deltaTime));
 
@@ -108,7 +108,7 @@ public struct StateC : IMyState
     {
     }
 
-    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation)
+    public void Update(float deltaTime, ref MyStateMachine stateMachine, ref Translation translation, ref Rotation rotation, EntityCommandBuffer.ParallelWriter ecb)
     {
         translation.Value = StartPosition + (MoveDirection * math.sin(((math.PI * 2f) / Duration) * math.clamp(DurationCounter, 0f, Duration)) * MoveAmplitude);
 

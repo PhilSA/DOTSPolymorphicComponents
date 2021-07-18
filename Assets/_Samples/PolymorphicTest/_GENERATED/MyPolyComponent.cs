@@ -42,7 +42,7 @@ public struct MyPolyComponent : IComponentData
 	}
 
 
-	public void Update(Single deltaTime, ref MyPolyCompSharedData sharedData, ref Translation translation, ref Rotation rotation)
+	public void Update(System.Single deltaTime, ref MyPolyCompSharedData sharedData, ref Unity.Transforms.Translation translation, ref Unity.Transforms.Rotation rotation)
 	{
 		switch (CurrentTypeId)
 		{
